@@ -2,7 +2,8 @@ program PedidosVS;
 
 uses
   Vcl.Forms,
-  untFormPrincipal in 'untFormPrincipal.pas' {frmPrincipal};
+  untFormPrincipal in 'untFormPrincipal.pas' {frmPrincipal},
+  untFormCadastroBase in 'untFormCadastroBase.pas' {frmCadastroBase};
 
 {$R *.res}
 

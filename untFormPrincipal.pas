@@ -3,11 +3,16 @@ unit untFormPrincipal;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Actions, ActnList, Menus;
 
 type
   TfrmPrincipal = class(TForm)
+    mmnMenuPrincipal: TMainMenu;
+    miManutencao: TMenuItem;
+    miPedidos: TMenuItem;
+    alPrincipal: TActionList;
+    actItens: TAction;
+    actPedidos: TAction;
   private
     { Private declarations }
   public

@@ -10,7 +10,28 @@ object frmPrincipal: TfrmPrincipal
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
+  Menu = mmnMenuPrincipal
   OldCreateOrder = False
   PixelsPerInch = 120
   TextHeight = 16
+  object mmnMenuPrincipal: TMainMenu
+    Left = 204
+    Top = 4
+    object miManutencao: TMenuItem
+      Action = actItens
+    end
+    object miPedidos: TMenuItem
+      Action = actPedidos
+    end
+  end
+  object alPrincipal: TActionList
+    Left = 296
+    Top = 4
+    object actItens: TAction
+      Caption = 'Cadastro de &Itens'
+    end
+    object actPedidos: TAction
+      Caption = '&Pedidos'
+    end
+  end
 end
