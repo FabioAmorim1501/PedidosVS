@@ -29,6 +29,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 4
     object actItens: TAction
       Caption = 'Cadastro de &Itens'
+      OnExecute = actItensExecute
     end
     object actPedidos: TAction
       Caption = '&Pedidos'

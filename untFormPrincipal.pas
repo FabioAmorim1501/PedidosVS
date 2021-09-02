@@ -13,6 +13,7 @@ type
     alPrincipal: TActionList;
     actItens: TAction;
     actPedidos: TAction;
+    procedure actItensExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -24,6 +25,21 @@ var
 
 implementation
 
+uses
+  untFormCadastroBase, untFormCadastroItens;
+
 {$R *.dfm}
+
+procedure TfrmPrincipal.actItensExecute(Sender: TObject);
+var
+  CadastroItens: TfrmCadastroItens;
+begin
+  CadastroItens := TfrmCadastroItens.Create(Self);
+  try
+    CadastroItens.ShowModal;
+  finally
+    CadastroItens.Free;
+  end;
+end;
 
 end.

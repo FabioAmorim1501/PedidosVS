@@ -11,6 +11,7 @@ object frmCadastroBase: TfrmCadastroBase
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 120
   TextHeight = 16
   object pnlDados: TPanel
@@ -21,9 +22,6 @@ object frmCadastroBase: TfrmCadastroBase
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitLeft = -6
-    ExplicitTop = 2
-    ExplicitWidth = 431
   end
   object pnlBotoes: TPanel
     Left = 452
@@ -64,8 +62,6 @@ object frmCadastroBase: TfrmCadastroBase
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      ExplicitLeft = -4
-      ExplicitTop = 39
     end
     object btnPesquisar: TButton
       Left = 0
@@ -81,8 +77,6 @@ object frmCadastroBase: TfrmCadastroBase
       Font.Style = []
       ParentFont = False
       TabOrder = 2
-      ExplicitLeft = 4
-      ExplicitTop = 141
     end
     object btnExcluir: TButton
       Left = 0
@@ -98,12 +92,13 @@ object frmCadastroBase: TfrmCadastroBase
       Font.Style = []
       ParentFont = False
       TabOrder = 3
-      ExplicitLeft = 4
     end
   end
   object cdsCadastro: TClientDataSet
     Aggregates = <>
+    FieldOptions.UpdatePersistent = True
     Params = <>
+    ProviderName = 'dspCadastro'
     Left = 408
     Top = 8
   end
@@ -122,5 +117,18 @@ object frmCadastroBase: TfrmCadastroBase
     object actExcluir: TAction
       Caption = '&Excluir'
     end
+    object actSalvar: TAction
+      Caption = '&Salvar'
+    end
+  end
+  object qryCadastro: TFDQuery
+    ConstraintsEnabled = True
+    Left = 408
+    Top = 124
+  end
+  object dspCadastro: TDataSetProvider
+    DataSet = qryCadastro
+    Left = 408
+    Top = 180
   end
 end
