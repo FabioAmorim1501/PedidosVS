@@ -3,11 +3,10 @@ unit untFormCadastroItens;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Math,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, untFormCadastroBase, System.Actions, Vcl.ActnList, Data.DB, Datasnap.DBClient,
-  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.NumberBox, Vcl.Grids, Data.FMTBcd, Data.SqlExpr, Data.DBXInterBase, Datasnap.Provider,
-  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Math, Controls, Forms, Dialogs, untFormCadastroBase, Actions,
+  ActnList, DB, DBClient, StdCtrls, ExtCtrls, NumberBox, Grids, FMTBcd, Provider, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
+  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
   TfrmCadastroItens = class(TfrmCadastroBase)
@@ -15,24 +14,23 @@ type
     lblIDITEM: TLabel;
     lblDESCITEM: TLabel;
     edtDESCITEM: TEdit;
-    lblRegistros: TLabel;
-    grdRegistros: TStringGrid;
     cdsCadastroIDITEM: TIntegerField;
     cdsCadastroDESCITEM: TStringField;
-    pnlNav: TPanel;
-    btnAvancar: TButton;
-    btnRetroceder: TButton;
-    txtPagNav: TStaticText;
     qryCadastroIDITEM: TIntegerField;
     qryCadastroDESCITEM: TStringField;
-    procedure FormCreate(Sender: TObject);
     procedure actIncluirExecute(Sender: TObject);
     procedure actSalvarExecute(Sender: TObject);
+    procedure grdRegistrosSelectCell(Sender: TObject; ACol, ARow: Integer; var CanSelect: Boolean);
+    procedure actAlterarExecute(Sender: TObject);
+    procedure actCancelarExecute(Sender: TObject);
+    procedure actPesquisarExecute(Sender: TObject);
+    procedure nmbIDITEMChange(Sender: TObject);
+    procedure edtDESCITEMChange(Sender: TObject);
+    procedure Validacoes; override;
   private
-    FOffsetAtual: Integer;
-    function CarregarLinhas(const AQuantidade: Integer = 8; const AOffset: Integer = 0): TfrmCadastroItens;
     procedure PodeEditar(const AEditar: Boolean);
     procedure LimparCampos;
+    procedure Pesquisar;
   public
     { Public declarations }
   end;
@@ -43,40 +41,74 @@ var
 implementation
 
 uses
-  untBancoDados;
+  StrUtils, untBancoDados;
 
 {$R *.dfm}
 
+procedure TfrmCadastroItens.actAlterarExecute(Sender: TObject);
+begin
+  PodeEditar(True);
+  inherited;
+  nmbIDITEM.Value := cdsCadastroIDITEM.Value;
+  edtDESCITEM.Text := cdsCadastroDESCITEM.AsString;
+  edtDESCITEM.SetFocus;
+end;
+
+procedure TfrmCadastroItens.actCancelarExecute(Sender: TObject);
+begin
+  nmbIDITEM.ReadOnly := True;
+  nmbIDITEM.OnChange := nil;
+  edtDESCITEM.OnChange := nil;
+  PodeEditar(False);
+  inherited;
+  LimparCampos;
+end;
+
 procedure TfrmCadastroItens.actIncluirExecute(Sender: TObject);
 begin
-  inherited;
   PodeEditar(True);
-  cdsCadastro.Append;
+  inherited;
   nmbIDITEM.Value := -1;
-  btnIncluir.Action := actSalvar;
+  edtDESCITEM.SetFocus;
+end;
+
+procedure TfrmCadastroItens.actPesquisarExecute(Sender: TObject);
+begin
+  PodeEditar(True);
+  inherited;
+  nmbIDITEM.ReadOnly := False;
+  nmbIDITEM.Text := '';
+  nmbIDITEM.SetFocus;
+  nmbIDITEM.OnChange := nmbIDITEMChange;
+  edtDESCITEM.OnChange := edtDESCITEMChange;
 end;
 
 procedure TfrmCadastroItens.actSalvarExecute(Sender: TObject);
 begin
-  inherited;
   PodeEditar(False);
-  TBancoDados.ConexaoBD.StartTransaction;
+  cdsCadastroDESCITEM.AsString := edtDESCITEM.Text;
   try
-//    qryCadastroIDITEM.ReadOnly := True;
-    cdsCadastroDESCITEM.AsString := edtDESCITEM.Text;
-    cdsCadastro.Post;
-    TBancoDados.ConexaoBD.Commit;
+    inherited;
   except
     on E: Exception do
     begin
-      TBancoDados.ConexaoBD.Rollback;
       PodeEditar(True);
       Raise;
     end;
   end;
-  btnIncluir.Action := actIncluir;
   LimparCampos;
-  CarregarLinhas;
+end;
+
+procedure TfrmCadastroItens.edtDESCITEMChange(Sender: TObject);
+begin
+  inherited;
+  Pesquisar;
+end;
+
+procedure TfrmCadastroItens.grdRegistrosSelectCell(Sender: TObject; ACol, ARow: Integer; var CanSelect: Boolean);
+begin
+  inherited;
+  cdsCadastro.RecNo := FOffsetAtual + ARow;
 end;
 
 procedure TfrmCadastroItens.LimparCampos;
@@ -85,31 +117,27 @@ begin
   edtDESCITEM.Clear;
 end;
 
-function TfrmCadastroItens.CarregarLinhas(const AQuantidade: Integer; const AOffset: Integer): TfrmCadastroItens;
-var
-  Offset: Integer;
-  PgAtual, TotalPG: Integer;
-  Linha: TStrings;
+procedure TfrmCadastroItens.nmbIDITEMChange(Sender: TObject);
 begin
-  grdRegistros.RowCount := 1;
-  grdRegistros.RowCount := Min(cdsCadastro.RecordCount + 1, 8);
-  Offset := FOffsetAtual + AOffset;
-  cdsCadastro.RecNo := IfThen(not(cdsCadastro.IsEmpty), 1) + Ord(Offset);
+  inherited;
+  Pesquisar;
+end;
 
-  repeat
-    Linha := TStringList.Create;
-    Linha.Add('');
-    Linha.Add(cdsCadastroIDITEM.AsString);
-    Linha.Add(cdsCadastroDESCITEM.AsString);
-    grdRegistros.Rows[Max(cdsCadastro.RecNo, 1)] := Linha;
-  until (not(cdsCadastro.FindNext)) or ((cdsCadastro.RecNo - AOffset) = AQuantidade);
-
-  PgAtual := Ceil(cdsCadastro.RecNo / 8);
-  TotalPG := Ceil(cdsCadastro.RecordCount / 8);
-  txtPagNav.Caption := Format('%d/%d', [PgAtual, TotalPG]);
-  btnRetroceder.Enabled := PgAtual > 1;
-  btnAvancar.Enabled := PgAtual < TotalPG;
-  Result := Self;
+procedure TfrmCadastroItens.Pesquisar;
+var
+  Filtrar: Boolean;
+begin
+  Filtrar := (Trim(nmbIDITEM.Text) <> '') or (Trim(edtDESCITEM.Text) <> '');
+  if(Filtrar)then
+  begin
+    cdsCadastro.Filtered := False;
+    cdsCadastro.Filter := Format('%s = %d ', [cdsCadastroIDITEM.FieldName, nmbIDITEM.ValueInt]) +
+      IfThen(Trim(edtDESCITEM.Text) <> '', Format('OR UPPER(%s) LIKE UPPER(''%%%s%%'')', [cdsCadastroDESCITEM.FieldName,
+      edtDESCITEM.Text]));
+  end;
+  cdsCadastro.Filter := IfThen(Filtrar, cdsCadastro.Filter);
+  cdsCadastro.Filtered := Filtrar;
+  CarregarLinhas;
 end;
 
 procedure TfrmCadastroItens.PodeEditar(const AEditar: Boolean);
@@ -118,22 +146,14 @@ begin
   edtDESCITEM.Enabled := AEditar;
 end;
 
-procedure TfrmCadastroItens.FormCreate(Sender: TObject);
-var
-  Colunas: TStrings;
-  Field: TField;
+procedure TfrmCadastroItens.Validacoes;
 begin
   inherited;
-  FOffsetAtual := 0;
-  Colunas := TStringList.Create;
-  Colunas.Add('');
-  for Field in cdsCadastro.Fields do
+  if(Trim(edtDESCITEM.Text) = '')then
   begin
-    Colunas.Add(Field.DisplayLabel);
+    MessageDlg('O campo Descrição precisa ser preenchido!', mtWarning, [mbOK], HelpContext);
+    Abort;
   end;
-  grdRegistros.Rows[0] := Colunas;
-  cdsCadastro.Open;
-  CarregarLinhas;
 end;
 
 end.

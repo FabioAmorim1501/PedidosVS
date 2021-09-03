@@ -2,43 +2,66 @@ inherited frmCadastroItens: TfrmCadastroItens
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Cadastro de Itens'
-  ClientHeight = 404
+  ClientHeight = 422
   ClientWidth = 628
   ExplicitWidth = 634
-  ExplicitHeight = 433
+  ExplicitHeight = 451
   PixelsPerInch = 120
   TextHeight = 16
   inherited pnlDados: TPanel
     Width = 464
-    Height = 404
-    Font.Height = -17
-    ParentFont = False
+    Height = 422
     ExplicitWidth = 464
-    ExplicitHeight = 404
-    object lblIDITEM: TLabel
+    ExplicitHeight = 422
+    inherited lblRegistros: TLabel
+      Top = 125
+      ExplicitTop = 125
+    end
+    object lblIDITEM: TLabel [1]
       Left = 8
       Top = 8
       Width = 50
       Height = 21
       Caption = 'Codigo'
     end
-    object lblDESCITEM: TLabel
+    object lblDESCITEM: TLabel [2]
       Left = 8
       Top = 66
       Width = 73
       Height = 21
       Caption = 'Descri'#231#227'o'
     end
-    object lblRegistros: TLabel
-      Left = 8
-      Top = 126
-      Width = 70
-      Height = 21
-      Caption = 'Registros'
+    inherited grdRegistros: TStringGrid
+      Top = 152
+      Width = 448
+      Height = 233
+      TabOrder = 2
+      OnSelectCell = grdRegistrosSelectCell
+      ExplicitTop = 152
+      ExplicitWidth = 448
+      ExplicitHeight = 233
+    end
+    inherited pnlNav: TPanel
+      Top = 393
+      Width = 464
+      TabOrder = 3
+      ExplicitTop = 393
+      inherited btnAvancar: TButton
+        Left = 428
+        ExplicitLeft = 428
+      end
+      inherited btnRetroceder: TButton
+        Left = 320
+        ExplicitLeft = 320
+      end
+      inherited txtPagNav: TStaticText
+        Left = 348
+        ExplicitLeft = 348
+      end
     end
     object nmbIDITEM: TNumberBox
       Left = 8
-      Top = 32
+      Top = 31
       Width = 53
       Height = 29
       Enabled = False
@@ -54,72 +77,12 @@ inherited frmCadastroItens: TfrmCadastroItens
       Enabled = False
       TabOrder = 1
     end
-    object grdRegistros: TStringGrid
-      AlignWithMargins = True
-      Left = 8
-      Top = 123
-      Width = 448
-      Height = 244
-      Margins.Left = 8
-      Margins.Top = 8
-      Margins.Right = 8
-      Margins.Bottom = 8
-      Align = alBottom
-      ColCount = 3
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goFixedRowDefAlign]
-      TabOrder = 2
-      ColWidths = (
-        14
-        77
-        348)
-      RowHeights = (
-        24
-        24
-        24
-        24
-        24)
-    end
-    object pnlNav: TPanel
-      Left = 0
-      Top = 375
-      Width = 464
-      Height = 29
-      Align = alBottom
-      BevelOuter = bvNone
-      TabOrder = 3
-      object btnAvancar: TButton
-        Left = 428
-        Top = 0
-        Width = 28
-        Height = 25
-        Caption = '>'
-        TabOrder = 0
-      end
-      object btnRetroceder: TButton
-        Left = 320
-        Top = 0
-        Width = 28
-        Height = 25
-        Caption = '<'
-        TabOrder = 1
-      end
-      object txtPagNav: TStaticText
-        Left = 348
-        Top = 2
-        Width = 81
-        Height = 25
-        Alignment = taCenter
-        AutoSize = False
-        Caption = '999/999'
-        TabOrder = 2
-      end
-    end
   end
   inherited pnlBotoes: TPanel
     Left = 464
-    Height = 404
+    Height = 422
     ExplicitLeft = 464
-    ExplicitHeight = 404
+    ExplicitHeight = 422
   end
   inherited cdsCadastro: TClientDataSet
     FieldOptions.UpdatePersistent = True
@@ -139,17 +102,17 @@ inherited frmCadastroItens: TfrmCadastroItens
   inherited alCadastro: TActionList
     Left = 340
     Top = 4
-    inherited actIncluir: TAction
-      OnExecute = actIncluirExecute
+    inherited actPesquisar: TAction
+      OnExecute = actPesquisarExecute
     end
-    inherited actSalvar: TAction
-      OnExecute = actSalvarExecute
+    inherited actExcluir: TAction
+      OnExecute = actExcluirExecute
     end
   end
   inherited qryCadastro: TFDQuery
     ConstraintsEnabled = False
     SQL.Strings = (
-      'SELECT * FROM ITEM')
+      'SELECT * FROM ITEM ORDER BY 1')
     Left = 252
     Top = 4
     object qryCadastroIDITEM: TIntegerField

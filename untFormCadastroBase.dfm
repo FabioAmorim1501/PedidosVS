@@ -21,7 +21,84 @@ object frmCadastroBase: TfrmCadastroBase
     Height = 392
     Align = alClient
     BevelOuter = bvNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -17
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 0
+    object lblRegistros: TLabel
+      Left = 8
+      Top = 114
+      Width = 70
+      Height = 21
+      Caption = 'Registros'
+    end
+    object grdRegistros: TStringGrid
+      AlignWithMargins = True
+      Left = 8
+      Top = 140
+      Width = 436
+      Height = 215
+      Margins.Left = 8
+      Margins.Top = 8
+      Margins.Right = 8
+      Margins.Bottom = 8
+      Align = alBottom
+      ColCount = 3
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goFixedRowDefAlign]
+      TabOrder = 0
+      ColWidths = (
+        14
+        77
+        348)
+      RowHeights = (
+        24
+        24
+        24
+        24
+        24)
+    end
+    object pnlNav: TPanel
+      Left = 0
+      Top = 363
+      Width = 452
+      Height = 29
+      Align = alBottom
+      BevelOuter = bvNone
+      TabOrder = 1
+      ExplicitTop = 375
+      ExplicitWidth = 464
+      object btnAvancar: TButton
+        Left = 416
+        Top = 0
+        Width = 28
+        Height = 25
+        Caption = '>'
+        TabOrder = 0
+        OnClick = btnAvancarClick
+      end
+      object btnRetroceder: TButton
+        Left = 308
+        Top = 0
+        Width = 28
+        Height = 25
+        Caption = '<'
+        TabOrder = 1
+        OnClick = btnRetrocederClick
+      end
+      object txtPagNav: TStaticText
+        Left = 336
+        Top = 2
+        Width = 81
+        Height = 25
+        Alignment = taCenter
+        AutoSize = False
+        Caption = '999/999'
+        TabOrder = 2
+      end
+    end
   end
   object pnlBotoes: TPanel
     Left = 452
@@ -106,18 +183,27 @@ object frmCadastroBase: TfrmCadastroBase
     Top = 68
     object actIncluir: TAction
       Caption = '&Incluir'
+      OnExecute = actIncluirExecute
     end
     object actAlterar: TAction
       Caption = '&Alterar'
+      OnExecute = actAlterarExecute
     end
     object actPesquisar: TAction
       Caption = '&Pesquisar'
+      OnExecute = actPesquisarExecute
     end
     object actExcluir: TAction
       Caption = '&Excluir'
+      OnExecute = actExcluirExecute
     end
     object actSalvar: TAction
       Caption = '&Salvar'
+      OnExecute = actSalvarExecute
+    end
+    object actCancelar: TAction
+      Caption = '&Cancelar'
+      OnExecute = actCancelarExecute
     end
   end
   object qryCadastro: TFDQuery
