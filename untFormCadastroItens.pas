@@ -23,6 +23,8 @@ type
     btnAvancar: TButton;
     btnRetroceder: TButton;
     txtPagNav: TStaticText;
+    qryCadastroIDITEM: TIntegerField;
+    qryCadastroDESCITEM: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure actIncluirExecute(Sender: TObject);
     procedure actSalvarExecute(Sender: TObject);
@@ -40,6 +42,9 @@ var
 
 implementation
 
+uses
+  untBancoDados;
+
 {$R *.dfm}
 
 procedure TfrmCadastroItens.actIncluirExecute(Sender: TObject);
@@ -55,14 +60,18 @@ procedure TfrmCadastroItens.actSalvarExecute(Sender: TObject);
 begin
   inherited;
   PodeEditar(False);
+  TBancoDados.ConexaoBD.StartTransaction;
   try
-//    cdsCadastroIDITEM.Value := Round(Max(nmbIDITEM.Value, -1));
+//    qryCadastroIDITEM.ReadOnly := True;
     cdsCadastroDESCITEM.AsString := edtDESCITEM.Text;
     cdsCadastro.Post;
+    TBancoDados.ConexaoBD.Commit;
   except
     on E: Exception do
     begin
+      TBancoDados.ConexaoBD.Rollback;
       PodeEditar(True);
+      Raise;
     end;
   end;
   btnIncluir.Action := actIncluir;

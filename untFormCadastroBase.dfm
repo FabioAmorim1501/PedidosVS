@@ -96,7 +96,6 @@ object frmCadastroBase: TfrmCadastroBase
   end
   object cdsCadastro: TClientDataSet
     Aggregates = <>
-    FieldOptions.UpdatePersistent = True
     Params = <>
     ProviderName = 'dspCadastro'
     Left = 408

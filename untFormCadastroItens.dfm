@@ -152,6 +152,17 @@ inherited frmCadastroItens: TfrmCadastroItens
       'SELECT * FROM ITEM')
     Left = 252
     Top = 4
+    object qryCadastroIDITEM: TIntegerField
+      DisplayLabel = 'C'#243'digo'
+      FieldName = 'IDITEM'
+      ProviderFlags = [pfInKey]
+      ReadOnly = True
+    end
+    object qryCadastroDESCITEM: TStringField
+      DisplayLabel = 'Descri'#231#227'o'
+      FieldName = 'DESCITEM'
+      Size = 100
+    end
   end
   inherited dspCadastro: TDataSetProvider
     ResolveToDataSet = True
