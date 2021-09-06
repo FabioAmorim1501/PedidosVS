@@ -20,9 +20,9 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       Margins.Right = 8
       Margins.Bottom = 0
       Align = alBottom
-      Caption = 'Itens'
+      Caption = 'Itens Inseridos'
       ExplicitTop = 274
-      ExplicitWidth = 38
+      ExplicitWidth = 111
     end
     object lblNUMERO: TLabel [1]
       Left = 8
@@ -31,7 +31,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       Height = 21
       Caption = 'Pedido'
     end
-    object lblDATAEMISSAO: TLabel [2]
+    object lblDTEMISSAO: TLabel [2]
       Left = 76
       Top = 8
       Width = 62
@@ -90,14 +90,16 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       UseNaNValue = True
     end
     object edtCLIENTE: TEdit
-      Left = 8
-      Top = 92
+      Left = 10
+      Top = 89
       Width = 537
       Height = 29
       Anchors = [akLeft, akTop, akRight]
       Enabled = False
       MaxLength = 100
       TabOrder = 3
+      OnEnter = edtCLIENTEEnter
+      OnExit = edtCLIENTEExit
     end
     object pnlItem: TPanel
       AlignWithMargins = True
@@ -125,8 +127,8 @@ inherited frmCadastroPedido: TfrmCadastroPedido
         Caption = 'Codigo'
       end
       object lblDESCITEM: TLabel
-        Left = 95
-        Top = 7
+        Left = 101
+        Top = 8
         Width = 73
         Height = 21
         Caption = 'Descri'#231#227'o'
@@ -158,7 +160,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       object nmbIDITEM: TNumberBox
         Left = 8
         Top = 31
-        Width = 78
+        Width = 87
         Height = 29
         Enabled = False
         TabOrder = 0
@@ -166,9 +168,9 @@ inherited frmCadastroPedido: TfrmCadastroPedido
         OnChange = nmbIDITEMChange
       end
       object edtDESCITEM: TEdit
-        Left = 92
-        Top = 31
-        Width = 445
+        Left = 101
+        Top = 29
+        Width = 428
         Height = 29
         Anchors = [akLeft, akTop, akRight]
         Enabled = False
@@ -185,6 +187,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
         Enabled = False
         TabOrder = 2
         UseNaNValue = True
+        OnChange = CalcValorTotalOnChange
       end
       object nmbVALORUNIT: TNumberBox
         Left = 101
@@ -196,6 +199,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
         Mode = nbmCurrency
         TabOrder = 3
         UseNaNValue = True
+        OnChange = CalcValorTotalOnChange
       end
       object nmbVALORTOTAL: TNumberBox
         Left = 252
@@ -212,7 +216,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       object btnAdicionarItem: TButton
         Left = 403
         Top = 73
-        Width = 133
+        Width = 127
         Height = 45
         Action = actAdicionarItem
         Font.Charset = DEFAULT_CHARSET
@@ -227,10 +231,10 @@ inherited frmCadastroPedido: TfrmCadastroPedido
     object lblLegendaBoxItem: TStaticText
       Left = 8
       Top = 124
-      Width = 45
+      Width = 113
       Height = 25
       AutoSize = False
-      Caption = 'Item'
+      Caption = 'Item a Inserir'
       TabOrder = 5
     end
   end
@@ -285,7 +289,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       UseNaNValue = True
     end
   end
-  object edtDATAEMISSAO: TMaskEdit [2]
+  object edtDTEMISSAO: TMaskEdit [2]
     Left = 76
     Top = 32
     Width = 100
@@ -301,6 +305,8 @@ inherited frmCadastroPedido: TfrmCadastroPedido
     ParentFont = False
     TabOrder = 2
     Text = '  /  /    '
+    OnEnter = edtDTEMISSAOEnter
+    OnExit = edtDTEMISSAOExit
   end
   inherited cdsCadastro: TClientDataSet
     OnCalcFields = cdsCadastroCalcFields
@@ -337,6 +343,13 @@ inherited frmCadastroPedido: TfrmCadastroPedido
     object cdsCadastroVALORTOTAL: TFloatField
       DisplayLabel = 'Valor Total'
       FieldName = 'VALORTOTAL'
+    end
+    object cdsCadastroSOMA_VALORTOTAL: TAggregateField
+      DefaultExpression = 'SUM(VALORTOTAL)'
+      DisplayLabel = 'Valor Total do Pedido'
+      FieldName = 'SOMA_VALORTOTAL'
+      Active = True
+      DisplayName = ''
     end
   end
   inherited alCadastro: TActionList
@@ -386,6 +399,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
     Aggregates = <>
     Params = <>
     ProviderName = 'dspPedido'
+    AfterPost = cdsPedidoAfterPost
     Left = 512
     Top = 24
     object cdsPedidoIDPEDIDOCAB: TIntegerField

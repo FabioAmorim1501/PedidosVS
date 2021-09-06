@@ -44,7 +44,7 @@ type
     procedure actSalvarExecute(Sender: TObject);
     procedure actIncluirExecute(Sender: TObject);
     procedure actAlterarExecute(Sender: TObject);
-    function PodeClicarBtn(const APodeClicar: Boolean): TfrmCadastroBase;
+    function PodeAgir(const APodeClicar: Boolean): TfrmCadastroBase;
     procedure actExcluirExecute(Sender: TObject);
     procedure actCancelarExecute(Sender: TObject);
     procedure actPesquisarExecute(Sender: TObject);
@@ -76,7 +76,7 @@ begin
   CarregarLinhas;
 end;
 
-function TfrmCadastroBase.PodeClicarBtn(const APodeClicar: Boolean): TfrmCadastroBase;
+function TfrmCadastroBase.PodeAgir(const APodeClicar: Boolean): TfrmCadastroBase;
 begin
   actIncluir.Enabled := APodeClicar;
   actAlterar.Enabled := APodeClicar;
@@ -97,7 +97,7 @@ end;
 
 procedure TfrmCadastroBase.actAlterarExecute(Sender: TObject);
 begin
-  PodeClicarBtn(False);
+  PodeAgir(False);
   cdsCadastro.Edit;
   btnIncluir.Action := actSalvar;
   btnAlterar.Action := actCancelar;
@@ -114,7 +114,7 @@ begin
     cdsCadastro.Cancel;
   btnIncluir.Action := actIncluir;
   btnAlterar.Action := actAlterar;
-  PodeClicarBtn(True);
+  PodeAgir(True);
 end;
 
 procedure TfrmCadastroBase.actExcluirExecute(Sender: TObject);
@@ -144,7 +144,7 @@ end;
 
 procedure TfrmCadastroBase.actIncluirExecute(Sender: TObject);
 begin
-  PodeClicarBtn(False);
+  PodeAgir(False);
   cdsCadastro.Append;
   btnIncluir.Action := actSalvar;
   btnAlterar.Action := actCancelar;
@@ -152,7 +152,7 @@ end;
 
 procedure TfrmCadastroBase.actPesquisarExecute(Sender: TObject);
 begin
-  PodeClicarBtn(False);
+  PodeAgir(False);
   btnAlterar.Action := actCancelar;
 end;
 
@@ -178,7 +178,7 @@ begin
     btnAlterar.Action := actAlterar;
     CarregarLinhas;
   finally
-    PodeClicarBtn(True);
+    PodeAgir(True);
   end;
 end;
 

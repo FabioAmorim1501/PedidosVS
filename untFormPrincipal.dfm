@@ -22,6 +22,9 @@ object frmPrincipal: TfrmPrincipal
     end
     object miPedidos: TMenuItem
       Action = actPedidos
+      object RelatriodePedidos1: TMenuItem
+        Action = actLstPedidos
+      end
     end
   end
   object alPrincipal: TActionList
@@ -34,6 +37,10 @@ object frmPrincipal: TfrmPrincipal
     object actPedidos: TAction
       Caption = '&Pedidos'
       OnExecute = actPedidosExecute
+    end
+    object actLstPedidos: TAction
+      Caption = '&Relat'#243'rio de Pedidos'
+      OnExecute = actLstPedidosExecute
     end
   end
 end

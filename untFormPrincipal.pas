@@ -13,8 +13,11 @@ type
     alPrincipal: TActionList;
     actItens: TAction;
     actPedidos: TAction;
+    actLstPedidos: TAction;
+    RelatriodePedidos1: TMenuItem;
     procedure actItensExecute(Sender: TObject);
     procedure actPedidosExecute(Sender: TObject);
+    procedure actLstPedidosExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,7 +30,8 @@ var
 implementation
 
 uses
-  untFormCadastroBase, untFormCadastroItens, untFormCadastroPedido;
+  untFormCadastroBase, untFormCadastroItens, untFormCadastroPedido,
+  untFormRelatorioPedidos;
 
 {$R *.dfm}
 
@@ -40,6 +44,18 @@ begin
     CadastroItens.ShowModal;
   finally
     CadastroItens.Free;
+  end;
+end;
+
+procedure TfrmPrincipal.actLstPedidosExecute(Sender: TObject);
+var
+  RelatorioPedidos: TfrmLstPedidos;
+begin
+  RelatorioPedidos := TfrmLstPedidos.Create(Self);
+  try
+    RelatorioPedidos.ShowModal;
+  finally
+    RelatorioPedidos.Free;
   end;
 end;
 

@@ -3,17 +3,18 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, untFormCadastroBase, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Datasnap.Provider, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.Actions, Vcl.ActnList, Data.DB, Datasnap.DBClient,
-  Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls, Vcl.NumberBox, Vcl.WinXPickers, Vcl.ComCtrls, Vcl.Mask;
+  Vcl.StdCtrls, Vcl.Grids, Vcl.ExtCtrls, Vcl.NumberBox, Vcl.WinXPickers, Vcl.ComCtrls, Vcl.Mask,
+  untModel;
 
 type
   TfrmCadastroPedido = class(TfrmCadastroBase)
     lblNUMERO: TLabel;
     nmbNUMERO: TNumberBox;
-    lblDATAEMISSAO: TLabel;
+    lblDTEMISSAO: TLabel;
     lblCLIENTE: TLabel;
     edtCLIENTE: TEdit;
     pnlItem: TPanel;
@@ -56,18 +57,29 @@ type
     qryPedidoDTEMISSAO: TDateField;
     qryPedidoNUMERO: TIntegerField;
     qryPedidoCLIENTE: TStringField;
-    edtDATAEMISSAO: TMaskEdit;
+    edtDTEMISSAO: TMaskEdit;
+    cdsCadastroSOMA_VALORTOTAL: TAggregateField;
     procedure actIncluirExecute(Sender: TObject);
-    procedure actAdicionarItemExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure cdsCadastroCalcFields(DataSet: TDataSet);
     procedure nmbIDITEMChange(Sender: TObject);
+    procedure edtDTEMISSAOEnter(Sender: TObject);
+    procedure edtDTEMISSAOExit(Sender: TObject);
+    procedure edtCLIENTEEnter(Sender: TObject);
+    procedure edtCLIENTEExit(Sender: TObject);
+    procedure cdsPedidoAfterPost(DataSet: TDataSet);
+    procedure actAdicionarItemExecute(Sender: TObject);
+    procedure CalcValorTotalOnChange(Sender: TObject);
   private
+    FPedidoItem: TPedidoItem;
     procedure PodeEditar(const APodeEditar: Boolean);
     { Private declarations }
   public
     { Public declarations }
   end;
+
+  const
+    FormCaption = 'Cadastro de Pedido';
 
 var
   frmCadastroPedido: TfrmCadastroPedido;
@@ -75,14 +87,28 @@ var
 implementation
 
 uses
-  untBancoDados, untAuxiliar, untModel;
+  untBancoDados, untAuxiliar, System.SysUtils;
 
 {$R *.dfm}
 
+procedure TfrmCadastroPedido.FormCreate(Sender: TObject);
+begin
+  FPedidoItem := nil;
+  PodeEditar(False);
+  qryPedido := TBancoDados.CriarQueryConectada(qryPedido);
+  cdsPedido.Open;
+  edtDTEMISSAO.Text := FormatDateTime('dd/MM/yyyy', Date);
+  inherited;
+  nmbNUMERO.Text := '';
+  nmbIDITEM.Text := '';
+  nmbQUANTIDADE.Text := '';
+  nmbVALORUNIT.Text := '';
+  nmbVALORTOTAL.Text := '';
+  nmbValorTotalPedido.Text := '';
+end;
+
 procedure TfrmCadastroPedido.actAdicionarItemExecute(Sender: TObject);
 begin
-  inherited;
-  TBancoDados.IniciarTransacao;
   cdsCadastro.Append;
   try
     cdsCadastroIDPEDIDOCAB.Value := cdsPedidoIDPEDIDOCAB.Value;
@@ -92,21 +118,21 @@ begin
     cdsCadastroVALORTOTAL.Value := nmbVALORTOTAL.ValueFloat;
     cdsCadastro.Post;
     cdsCadastro.ApplyUpdates(-1);
-    TBancoDados.Commit;
   except
     on E: Exception do
     begin
-      TBancoDados.Rollback;
       cdsCadastro.Cancel;
     end;
   end;
+  CarregarLinhas;
 end;
 
 procedure TfrmCadastroPedido.actIncluirExecute(Sender: TObject);
 var
   QryNumero: TFDQuery;
 begin
-  PodeClicarBtn(False);
+  TBancoDados.IniciarTransacao;
+  PodeAgir(False);
   PodeEditar(True);
   cdsPedido.Append;
   QryNumero := TBancoDados.CriarQueryConectada;
@@ -118,6 +144,11 @@ begin
   finally
     QryNumero.Free;
   end;
+  cdsPedidoNUMERO.Value := nmbNUMERO.ValueInt;
+  cdsPedidoDTEMISSAO.Value := StrToDate(edtDTEMISSAO.Text);
+  cdsPedido.Post;
+  cdsPedido.ApplyUpdates(-1);
+  cdsPedido.Refresh;
   btnIncluir.Action := actSalvar;
   btnAlterar.Action := actCancelar;
   edtCLIENTE.SetFocus;
@@ -129,31 +160,55 @@ var
 begin
   inherited;
   Item := TItem.Create(cdsCadastroIDITEM.Value);
-  cdsCadastroDESCITEM.AsString :=  Item.Descricao;
+  try
+    cdsCadastroDESCITEM.AsString := Item.Descricao;
+  finally
+    Item.Free;
+  end;
 end;
 
-procedure TfrmCadastroPedido.FormCreate(Sender: TObject);
+procedure TfrmCadastroPedido.cdsPedidoAfterPost(DataSet: TDataSet);
 begin
-  PodeEditar(False);
-  qryPedido := TBancoDados.CriarQueryConectada(qryPedido);
-  cdsPedido.Open;
-  edtDATAEMISSAO.Text := FormatDateTime('dd/MM/yyyy', Date);
   inherited;
-  nmbNUMERO.Text := '';
-  nmbIDITEM.Text := '';
-  nmbQUANTIDADE.Text := '';
-  nmbVALORUNIT.Text := '';
-  nmbVALORTOTAL.Text := '';
-  nmbValorTotalPedido.Text := '';
+  if(cdsPedidoIDPEDIDOCAB.Value <> 0)then
+    Caption := Format('%s - %d', [FormCaption, cdsPedidoIDPEDIDOCAB.Value])
+  else
+    Caption := FormCaption;
+end;
+
+procedure TfrmCadastroPedido.edtCLIENTEEnter(Sender: TObject);
+begin
+  inherited;
+  cdsPedido.Edit;
+end;
+
+procedure TfrmCadastroPedido.edtCLIENTEExit(Sender: TObject);
+begin
+  inherited;
+  cdsPedidoCLIENTE.AsString := edtCLIENTE.Text;
+  cdsPedido.Post;
+end;
+
+procedure TfrmCadastroPedido.edtDTEMISSAOEnter(Sender: TObject);
+begin
+  inherited;
+  cdsPedido.Edit;
+end;
+
+procedure TfrmCadastroPedido.edtDTEMISSAOExit(Sender: TObject);
+begin
+  inherited;
+  cdsPedidoDTEMISSAO.Value := StrToDate(edtDTEMISSAO.Text);
+  cdsPedido.Post;
 end;
 
 procedure TfrmCadastroPedido.nmbIDITEMChange(Sender: TObject);
-var
-  item: TItem;
 begin
   inherited;
   try
-    Item := TItem.Create(nmbIDITEM.ValueInt);
+    if(FPedidoItem = nil)then
+      FPedidoItem := TPedidoItem.Create;
+    FPedidoItem.Item(TItem.Create(nmbIDITEM.ValueInt));
   except
     on E: Exception do
     begin
@@ -161,13 +216,18 @@ begin
       Raise;
     end;
   end;
-  edtDESCITEM.Text := Item.Descricao;
+  edtDESCITEM.Text := FPedidoItem.Item.Descricao;
+end;
+
+procedure TfrmCadastroPedido.CalcValorTotalOnChange(Sender: TObject);
+begin
+  nmbVALORTOTAL.Value := nmbQUANTIDADE.Value * nmbVALORUNIT.Value;
 end;
 
 procedure TfrmCadastroPedido.PodeEditar(const APodeEditar: Boolean);
 begin
 //  nmbNUMERO.Enabled := APodeEditar;
-  edtDATAEMISSAO.Enabled := APodeEditar;
+  edtDTEMISSAO.Enabled := APodeEditar;
   edtCLIENTE.Enabled := APodeEditar;
   nmbIDITEM.Enabled := APodeEditar;
   nmbQUANTIDADE.Enabled := APodeEditar;
