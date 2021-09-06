@@ -14,6 +14,7 @@ type
     actItens: TAction;
     actPedidos: TAction;
     procedure actItensExecute(Sender: TObject);
+    procedure actPedidosExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -26,7 +27,7 @@ var
 implementation
 
 uses
-  untFormCadastroBase, untFormCadastroItens;
+  untFormCadastroBase, untFormCadastroItens, untFormCadastroPedido;
 
 {$R *.dfm}
 
@@ -39,6 +40,18 @@ begin
     CadastroItens.ShowModal;
   finally
     CadastroItens.Free;
+  end;
+end;
+
+procedure TfrmPrincipal.actPedidosExecute(Sender: TObject);
+var
+  CadastroPedido: TfrmCadastroPedido;
+begin
+  CadastroPedido := TfrmCadastroPedido.Create(Self);
+  try
+    CadastroPedido.ShowModal;
+  finally
+    CadastroPedido.Free;
   end;
 end;
 

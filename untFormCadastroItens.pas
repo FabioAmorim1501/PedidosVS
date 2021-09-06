@@ -4,9 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Math, Controls, Forms, Dialogs, untFormCadastroBase, Actions,
-  ActnList, DB, DBClient, StdCtrls, ExtCtrls, NumberBox, Grids, FMTBcd, Provider, FireDAC.Stan.Intf, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
-  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  ActnList, DB, DBClient, StdCtrls, ExtCtrls, NumberBox, Grids, FMTBcd, Provider, UITypes, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
   TfrmCadastroItens = class(TfrmCadastroBase)
@@ -27,6 +27,7 @@ type
     procedure nmbIDITEMChange(Sender: TObject);
     procedure edtDESCITEMChange(Sender: TObject);
     procedure Validacoes; override;
+    procedure AntesDeSalvar; override;
   private
     procedure PodeEditar(const AEditar: Boolean);
     procedure LimparCampos;
@@ -86,7 +87,6 @@ end;
 procedure TfrmCadastroItens.actSalvarExecute(Sender: TObject);
 begin
   PodeEditar(False);
-  cdsCadastroDESCITEM.AsString := edtDESCITEM.Text;
   try
     inherited;
   except
@@ -97,6 +97,11 @@ begin
     end;
   end;
   LimparCampos;
+end;
+
+procedure TfrmCadastroItens.AntesDeSalvar;
+begin
+  cdsCadastroDESCITEM.AsString := edtDESCITEM.Text;
 end;
 
 procedure TfrmCadastroItens.edtDESCITEMChange(Sender: TObject);

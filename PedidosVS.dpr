@@ -1,12 +1,14 @@
 program PedidosVS;
 
 uses
-  Vcl.Forms,
-  untFormPrincipal in 'untFormPrincipal.pas' {frmPrincipal},
+  Forms,
+  untAuxiliar in 'untAuxiliar.pas',
+  untBancoDados in 'untBancoDados.pas',
   untFormCadastroBase in 'untFormCadastroBase.pas' {frmCadastroBase},
   untFormCadastroItens in 'untFormCadastroItens.pas' {frmCadastroItens},
-  untBancoDados in 'untBancoDados.pas',
-  untFormCadastroPedido in 'untFormCadastroPedido.pas' {frmCadastroPedido};
+  untFormCadastroPedido in 'untFormCadastroPedido.pas' {frmCadastroPedido},
+  untFormPrincipal in 'untFormPrincipal.pas' {frmPrincipal},
+  untModel in 'untModel.pas';
 
 {$R *.res}
 
@@ -14,6 +16,5 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
-  Application.CreateForm(TfrmCadastroPedido, frmCadastroPedido);
   Application.Run;
 end.

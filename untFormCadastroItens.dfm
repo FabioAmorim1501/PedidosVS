@@ -14,8 +14,8 @@ inherited frmCadastroItens: TfrmCadastroItens
     ExplicitWidth = 464
     ExplicitHeight = 422
     inherited lblRegistros: TLabel
-      Top = 125
-      ExplicitTop = 125
+      Top = 128
+      ExplicitTop = 128
     end
     object lblIDITEM: TLabel [1]
       Left = 8
@@ -26,7 +26,7 @@ inherited frmCadastroItens: TfrmCadastroItens
     end
     object lblDESCITEM: TLabel [2]
       Left = 8
-      Top = 66
+      Top = 68
       Width = 73
       Height = 21
       Caption = 'Descri'#231#227'o'
@@ -46,6 +46,7 @@ inherited frmCadastroItens: TfrmCadastroItens
       Width = 464
       TabOrder = 3
       ExplicitTop = 393
+      ExplicitWidth = 464
       inherited btnAvancar: TButton
         Left = 428
         ExplicitLeft = 428
@@ -61,8 +62,8 @@ inherited frmCadastroItens: TfrmCadastroItens
     end
     object nmbIDITEM: TNumberBox
       Left = 8
-      Top = 31
-      Width = 53
+      Top = 32
+      Width = 80
       Height = 29
       Enabled = False
       ReadOnly = True
@@ -71,10 +72,11 @@ inherited frmCadastroItens: TfrmCadastroItens
     end
     object edtDESCITEM: TEdit
       Left = 8
-      Top = 90
+      Top = 92
       Width = 448
       Height = 29
       Enabled = False
+      MaxLength = 100
       TabOrder = 1
     end
   end
@@ -102,12 +104,6 @@ inherited frmCadastroItens: TfrmCadastroItens
   inherited alCadastro: TActionList
     Left = 340
     Top = 4
-    inherited actPesquisar: TAction
-      OnExecute = actPesquisarExecute
-    end
-    inherited actExcluir: TAction
-      OnExecute = actExcluirExecute
-    end
   end
   inherited qryCadastro: TFDQuery
     ConstraintsEnabled = False

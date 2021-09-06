@@ -78,11 +78,16 @@
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
+        <DCC_MapFile>3</DCC_MapFile>
+        <VerInfo_Locale>1046</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -98,23 +103,21 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="untFormPrincipal.pas">
-            <Form>frmPrincipal</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
+        <DCCReference Include="untAuxiliar.pas"/>
+        <DCCReference Include="untBancoDados.pas"/>
         <DCCReference Include="untFormCadastroBase.pas">
             <Form>frmCadastroBase</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="untFormCadastroItens.pas">
             <Form>frmCadastroItens</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="untBancoDados.pas"/>
         <DCCReference Include="untFormCadastroPedido.pas">
             <Form>frmCadastroPedido</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="untFormPrincipal.pas">
+            <Form>frmPrincipal</Form>
+        </DCCReference>
+        <DCCReference Include="untModel.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -135,6 +138,10 @@
                 <Source>
                     <Source Name="MainSource">PedidosVS.dpr</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k270.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp270.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
                 <DeployFile LocalName="Win32\Debug\PedidosVS.exe" Configuration="Debug" Class="ProjectOutput">
@@ -918,6 +925,7 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
             </Platforms>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Math, Controls, Forms, Dialogs, Actions, ActnList, DB, DBClient,
-  StdCtrls, ExtCtrls, NumberBox, Grids, FMTBcd, Provider, FireDAC.Stan.Def, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  StdCtrls, ExtCtrls, NumberBox, Grids, FMTBcd, Provider, UITypes, FireDAC.Stan.Def, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
   FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FireDAC.Phys.FBDef, FireDAC.Phys, FireDAC.Phys.FB,
   FireDAC.Phys.IBBase, FireDAC.UI.Intf, FireDAC.VCLUI.Wait, FireDAC.Comp.UI;
@@ -48,7 +48,8 @@ type
     procedure actExcluirExecute(Sender: TObject);
     procedure actCancelarExecute(Sender: TObject);
     procedure actPesquisarExecute(Sender: TObject);
-    procedure Validacoes; virtual
+    procedure Validacoes; virtual;
+    procedure AntesDeSalvar; virtual;
   private
     { Private declarations }
   protected
@@ -63,25 +64,15 @@ var
 implementation
 
 uses
-  untBancoDados;
+  untBancoDados, untAuxiliar;
 
 {$R *.dfm}
 
 procedure TfrmCadastroBase.FormCreate(Sender: TObject);
-var
-  Colunas: TStrings;
-  Field: TField;
 begin
   qryCadastro.Connection := TBancoDados.ConexaoBD;
   FOffsetAtual := 0;
-  Colunas := TStringList.Create;
-  Colunas.Add('');
-  for Field in cdsCadastro.Fields do
-  begin
-    Colunas.Add(Field.DisplayLabel);
-  end;
-  grdRegistros.Rows[0] := Colunas;
-  cdsCadastro.Open;
+  CarregarCabecalho(cdsCadastro, grdRegistros);
   CarregarLinhas;
 end;
 
@@ -91,11 +82,17 @@ begin
   actAlterar.Enabled := APodeClicar;
   actPesquisar.Enabled := APodeClicar;
   actExcluir.Enabled := APodeClicar;
+  Result := Self;
 end;
 
 procedure TfrmCadastroBase.Validacoes;
 begin
-  // A ser implementado
+  // A ser implementado nos filhos
+end;
+
+procedure TfrmCadastroBase.AntesDeSalvar;
+begin
+  // A ser implementado nos filhos
 end;
 
 procedure TfrmCadastroBase.actAlterarExecute(Sender: TObject);
@@ -165,6 +162,7 @@ begin
   try
     TBancoDados.ConexaoBD.StartTransaction;
     try
+      AntesDeSalvar;
       cdsCadastro.Post;
       cdsCadastro.ApplyUpdates(-1);
       TBancoDados.ConexaoBD.Commit;

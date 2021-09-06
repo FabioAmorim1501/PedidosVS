@@ -30,7 +30,7 @@ object frmCadastroBase: TfrmCadastroBase
     TabOrder = 0
     object lblRegistros: TLabel
       Left = 8
-      Top = 114
+      Top = 116
       Width = 70
       Height = 21
       Caption = 'Registros'
@@ -68,8 +68,6 @@ object frmCadastroBase: TfrmCadastroBase
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitTop = 375
-      ExplicitWidth = 464
       object btnAvancar: TButton
         Left = 416
         Top = 0

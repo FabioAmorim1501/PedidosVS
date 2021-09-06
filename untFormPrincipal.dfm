@@ -33,6 +33,7 @@ object frmPrincipal: TfrmPrincipal
     end
     object actPedidos: TAction
       Caption = '&Pedidos'
+      OnExecute = actPedidosExecute
     end
   end
 end
