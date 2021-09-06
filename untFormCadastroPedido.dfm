@@ -49,18 +49,21 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       Top = 299
       Width = 537
       Margins.Top = 4
+      TabOrder = 5
       ExplicitTop = 299
       ExplicitWidth = 537
     end
     inherited pnlNav: TPanel
       Top = 522
       Width = 553
+      TabOrder = 6
       ExplicitTop = 522
       ExplicitWidth = 553
       inherited btnAvancar: TButton
         Left = 518
         Top = -1
         Anchors = [akTop, akRight]
+        TabOrder = 2
         ExplicitLeft = 518
         ExplicitTop = -1
       end
@@ -68,6 +71,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
         Left = 410
         Top = -1
         Anchors = [akTop, akRight]
+        TabOrder = 0
         ExplicitLeft = 410
         ExplicitTop = -1
       end
@@ -75,6 +79,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
         Left = 438
         Top = 1
         Anchors = [akTop, akRight]
+        TabOrder = 1
         ExplicitLeft = 438
         ExplicitTop = 1
       end
@@ -86,8 +91,9 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       Height = 29
       Enabled = False
       ReadOnly = True
-      TabOrder = 2
+      TabOrder = 0
       UseNaNValue = True
+      OnChange = nmbNUMEROChange
     end
     object edtCLIENTE: TEdit
       Left = 10
@@ -97,7 +103,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       Anchors = [akLeft, akTop, akRight]
       Enabled = False
       MaxLength = 100
-      TabOrder = 3
+      TabOrder = 2
       OnEnter = edtCLIENTEEnter
       OnExit = edtCLIENTEExit
     end
@@ -151,7 +157,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       end
       object lblVALORTOTAL: TLabel
         Left = 252
-        Top = 61
+        Top = 64
         Width = 120
         Height = 21
         Anchors = [akTop, akRight]
@@ -169,7 +175,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       end
       object edtDESCITEM: TEdit
         Left = 101
-        Top = 29
+        Top = 31
         Width = 428
         Height = 29
         Anchors = [akLeft, akTop, akRight]
@@ -235,7 +241,26 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       Height = 25
       AutoSize = False
       Caption = 'Item a Inserir'
-      TabOrder = 5
+      TabOrder = 3
+    end
+    object edtDTEMISSAO: TMaskEdit
+      Left = 76
+      Top = 32
+      Width = 100
+      Height = 29
+      Enabled = False
+      EditMask = '!99/99/0000;1;_'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      MaxLength = 10
+      ParentFont = False
+      TabOrder = 1
+      Text = '  /  /    '
+      OnEnter = edtDTEMISSAOEnter
+      OnExit = edtDTEMISSAOExit
     end
   end
   inherited pnlBotoes: TPanel
@@ -288,25 +313,6 @@ inherited frmCadastroPedido: TfrmCadastroPedido
       TabOrder = 4
       UseNaNValue = True
     end
-  end
-  object edtDTEMISSAO: TMaskEdit [2]
-    Left = 76
-    Top = 32
-    Width = 100
-    Height = 29
-    Enabled = False
-    EditMask = '!99/99/0000;1;_'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -17
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    MaxLength = 10
-    ParentFont = False
-    TabOrder = 2
-    Text = '  /  /    '
-    OnEnter = edtDTEMISSAOEnter
-    OnExit = edtDTEMISSAOExit
   end
   inherited cdsCadastro: TClientDataSet
     OnCalcFields = cdsCadastroCalcFields
@@ -413,6 +419,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
     end
     object cdsPedidoCLIENTE: TStringField
       FieldName = 'CLIENTE'
+      Size = 100
     end
   end
   object qryPedido: TFDQuery
@@ -432,6 +439,7 @@ inherited frmCadastroPedido: TfrmCadastroPedido
     end
     object qryPedidoCLIENTE: TStringField
       FieldName = 'CLIENTE'
+      Size = 100
     end
   end
   object dspPedido: TDataSetProvider

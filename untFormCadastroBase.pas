@@ -50,6 +50,7 @@ type
     procedure actPesquisarExecute(Sender: TObject);
     procedure Validacoes; virtual;
     procedure AntesDeSalvar; virtual;
+    procedure LimparStringGrid(var AGrd: TStringGrid);
   private
     { Private declarations }
   protected
@@ -93,6 +94,18 @@ end;
 procedure TfrmCadastroBase.AntesDeSalvar;
 begin
   // A ser implementado nos filhos
+end;
+
+procedure TfrmCadastroBase.LimparStringGrid(var AGrd: TStringGrid);
+var
+  RowIndex: Integer;
+begin
+  RowIndex := AGrd.RowCount;
+  while RowIndex > 0 do
+  begin
+    AGrd.Rows[RowIndex].Clear;
+    Inc(RowIndex, -1);
+  end;
 end;
 
 procedure TfrmCadastroBase.actAlterarExecute(Sender: TObject);
@@ -195,18 +208,13 @@ end;
 function TfrmCadastroBase.CarregarLinhas(const AQuantidade: Integer; const AOffset: Integer): TfrmCadastroBase;
 var
   Offset: Integer;
-  PgAtual, TotalPG, RowIndex: Integer;
+  PgAtual, TotalPG: Integer;
   Linha: TStrings;
   Field: TField;
 begin
   grdRegistros.BeginUpdate;
   try
-    RowIndex := grdRegistros.RowCount;
-    while RowIndex > 1 do
-    begin
-      grdRegistros.Rows[RowIndex].Clear;
-      Inc(RowIndex, -1);
-    end;
+    LimparStringGrid(grdRegistros);
     grdRegistros.RowCount := Min(cdsCadastro.RecordCount + 1, LinhasPPagina);
     Offset := (FOffsetAtual + AOffset);
     Offset := IfThen(cdsCadastro.RecordCount <= Offset, Max(Offset - LinhasPPagina, 0), Offset);
@@ -218,7 +226,8 @@ begin
         Linha.Add('');
         for Field in cdsCadastro.Fields do
         begin
-          Linha.Add(Field.AsString);
+          if(Field.Visible)then
+            Linha.Add(Field.AsString);
         end;
         grdRegistros.Rows[Max(cdsCadastro.RecNo - Offset, 1)] := Linha;
         cdsCadastro.Next;

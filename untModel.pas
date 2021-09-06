@@ -80,7 +80,7 @@ type
 implementation
 
 uses
-  SysUtils, FireDAC.Comp.Client, untBancoDados;
+  SysUtils, DB, FireDAC.Comp.Client, untBancoDados;
 
 { TBDItem }
 
@@ -99,7 +99,7 @@ end;
 destructor TBDItem.Destroy;
 begin
   FId := 0;
-  FreeAndNil(Self);
+  Self := nil;
 end;
 
 function TBDItem.Id: Integer;
@@ -151,7 +151,7 @@ function TItem.CarregarBD: TItem;
 var
   QryDescItem: TFDQuery;
 begin
-  QryDescItem := TBancoDados.CriarQueryConectada(QryDescItem);
+  QryDescItem := TBancoDados.CriarQueryConectada;
   try
     QryDescItem.Open('SELECT DESCITEM FROM ITEM WHERE IDITEM = :IDITEM',[FId]);
     if(not(QryDescItem.IsEmpty))then

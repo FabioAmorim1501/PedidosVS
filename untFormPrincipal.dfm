@@ -21,8 +21,11 @@ object frmPrincipal: TfrmPrincipal
       Action = actItens
     end
     object miPedidos: TMenuItem
-      Action = actPedidos
-      object RelatriodePedidos1: TMenuItem
+      Caption = '&Pedidos'
+      object miCadastroPedidos: TMenuItem
+        Action = actCadastroPedidos
+      end
+      object miRelatriodePedidos: TMenuItem
         Action = actLstPedidos
       end
     end
@@ -34,9 +37,9 @@ object frmPrincipal: TfrmPrincipal
       Caption = 'Cadastro de &Itens'
       OnExecute = actItensExecute
     end
-    object actPedidos: TAction
-      Caption = '&Pedidos'
-      OnExecute = actPedidosExecute
+    object actCadastroPedidos: TAction
+      Caption = 'Cadastro &Pedidos'
+      OnExecute = actCadastroPedidosExecute
     end
     object actLstPedidos: TAction
       Caption = '&Relat'#243'rio de Pedidos'

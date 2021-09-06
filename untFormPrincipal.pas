@@ -12,11 +12,12 @@ type
     miPedidos: TMenuItem;
     alPrincipal: TActionList;
     actItens: TAction;
-    actPedidos: TAction;
+    actCadastroPedidos: TAction;
     actLstPedidos: TAction;
-    RelatriodePedidos1: TMenuItem;
+    miRelatriodePedidos: TMenuItem;
+    miCadastroPedidos: TMenuItem;
     procedure actItensExecute(Sender: TObject);
-    procedure actPedidosExecute(Sender: TObject);
+    procedure actCadastroPedidosExecute(Sender: TObject);
     procedure actLstPedidosExecute(Sender: TObject);
   private
     { Private declarations }
@@ -59,7 +60,7 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.actPedidosExecute(Sender: TObject);
+procedure TfrmPrincipal.actCadastroPedidosExecute(Sender: TObject);
 var
   CadastroPedido: TfrmCadastroPedido;
 begin

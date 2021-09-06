@@ -57,8 +57,8 @@ type
     qryPedidoDTEMISSAO: TDateField;
     qryPedidoNUMERO: TIntegerField;
     qryPedidoCLIENTE: TStringField;
-    edtDTEMISSAO: TMaskEdit;
     cdsCadastroSOMA_VALORTOTAL: TAggregateField;
+    edtDTEMISSAO: TMaskEdit;
     procedure actIncluirExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure cdsCadastroCalcFields(DataSet: TDataSet);
@@ -70,9 +70,18 @@ type
     procedure cdsPedidoAfterPost(DataSet: TDataSet);
     procedure actAdicionarItemExecute(Sender: TObject);
     procedure CalcValorTotalOnChange(Sender: TObject);
+    procedure actSalvarExecute(Sender: TObject);
+    procedure actCancelarExecute(Sender: TObject);
+    procedure actPesquisarExecute(Sender: TObject);
+    procedure nmbNUMEROChange(Sender: TObject);
+    procedure actExcluirExecute(Sender: TObject);
   private
     FPedidoItem: TPedidoItem;
     procedure PodeEditar(const APodeEditar: Boolean);
+    procedure LimparCampos;
+    procedure LimparCamposItem;
+    procedure LimparCamposPedido;
+    procedure CarregarPedido;
     { Private declarations }
   public
     { Public declarations }
@@ -107,12 +116,47 @@ begin
   nmbValorTotalPedido.Text := '';
 end;
 
+procedure TfrmCadastroPedido.LimparCampos;
+begin
+  LimparCamposPedido;
+  LimparCamposItem;
+end;
+
+procedure TfrmCadastroPedido.LimparCamposItem;
+begin
+  nmbIDITEM.Clear;
+  edtDESCITEM.Clear;
+  nmbQUANTIDADE.Clear;
+  nmbVALORUNIT.Clear;
+  nmbVALORTOTAL.Clear;
+end;
+
+procedure TfrmCadastroPedido.LimparCamposPedido;
+begin
+  nmbNUMERO.Clear;
+  edtDTEMISSAO.Clear;
+  edtCLIENTE.Clear;
+  LimparStringGrid(grdRegistros);
+end;
+
+procedure TfrmCadastroPedido.CarregarPedido;
+begin
+  qryPedido.SQL.Text := 'SELECT * FROM PEDIDOCAB WHERE NUMERO = :NUMERO';
+  qryPedido.ParamByName('NUMERO').AsInteger := nmbNUMERO.ValueInt;
+  cdsPedido.Open;
+
+  edtDTEMISSAO.Text := cdsPedidoDTEMISSAO.AsString;
+  edtCLIENTE.Text := cdsPedidoCLIENTE.AsString;
+
+  CarregarLinhas;
+end;
+
 procedure TfrmCadastroPedido.actAdicionarItemExecute(Sender: TObject);
 begin
   cdsCadastro.Append;
   try
-    cdsCadastroIDPEDIDOCAB.Value := cdsPedidoIDPEDIDOCAB.Value;
     cdsCadastroIDITEM.Value := nmbIDITEM.ValueInt;
+    cdsCadastroIDPEDIDOCAB.Value := cdsPedidoIDPEDIDOCAB.Value;
     cdsCadastroQUANTIDADE.Value := nmbQUANTIDADE.ValueFloat;
     cdsCadastroVALORUNIT.Value := nmbVALORUNIT.ValueFloat;
     cdsCadastroVALORTOTAL.Value := nmbVALORTOTAL.ValueFloat;
@@ -124,7 +168,49 @@ begin
       cdsCadastro.Cancel;
     end;
   end;
+  LimparCamposItem;
   CarregarLinhas;
+end;
+
+procedure TfrmCadastroPedido.actCancelarExecute(Sender: TObject);
+begin
+  TBancoDados.Rollback;
+  LimparCampos;
+  btnIncluir.Action := actIncluir;
+  btnAlterar.Action := actAlterar;
+  PodeAgir(True);
+  PodeEditar(False);
+  nmbNUMERO.Enabled := False;
+  nmbNUMERO.ReadOnly := True;
+end;
+
+procedure TfrmCadastroPedido.actExcluirExecute(Sender: TObject);
+var
+  qryDelete: TFDQuery;
+begin
+  TBancoDados.IniciarTransacao;
+  qryDelete := TBancoDados.CriarQueryConectada;
+  try
+    try
+      qryDelete.SQL.Text := 'DELETE FROM PEDIDOITEM PI WHERE EXISTS '
+                           +'(SELECT P.IDPEDIDOCAB FROM PEDIDO P.IDPEDIDOCAB = PI.IDPEDIDOCAB AND P.NUMERO = :NUMERO)';
+      qryDelete.ParamByname('NUMERO').AsInteger := nmbNUMERO.ValueInt;
+      qryDelete.Execute;
+
+      qryDelete.SQL.Text := 'DELETE FROM PEDIDOCAB WHERE NUMERO = :NUMERO';
+      qryDelete.ParamByname('NUMERO').AsInteger := nmbNUMERO.ValueInt;
+      qryDelete.Execute;
+      TBancoDados.Commit;
+    except
+      on E:Exception do
+      begin
+        TBancoDados.Rollback;
+        Raise;
+      end;
+    end;
+  finally
+    qryDelete.Free;
+  end;
 end;
 
 procedure TfrmCadastroPedido.actIncluirExecute(Sender: TObject);
@@ -152,6 +238,22 @@ begin
   btnIncluir.Action := actSalvar;
   btnAlterar.Action := actCancelar;
   edtCLIENTE.SetFocus;
+end;
+
+procedure TfrmCadastroPedido.actPesquisarExecute(Sender: TObject);
+begin
+  nmbNUMERO.Enabled := True;
+  nmbNUMERO.ReadOnly := False;
+end;
+
+procedure TfrmCadastroPedido.actSalvarExecute(Sender: TObject);
+begin
+  TBancoDados.Commit;
+  btnIncluir.Action := actIncluir;
+  btnAlterar.Action := actAlterar;
+  LimparCampos;
+  PodeAgir(True);
+  PodeEditar(False);
 end;
 
 procedure TfrmCadastroPedido.cdsCadastroCalcFields(DataSet: TDataSet);
@@ -187,6 +289,7 @@ begin
   inherited;
   cdsPedidoCLIENTE.AsString := edtCLIENTE.Text;
   cdsPedido.Post;
+  cdsPedido.ApplyUpdates(-1);
 end;
 
 procedure TfrmCadastroPedido.edtDTEMISSAOEnter(Sender: TObject);
@@ -200,6 +303,7 @@ begin
   inherited;
   cdsPedidoDTEMISSAO.Value := StrToDate(edtDTEMISSAO.Text);
   cdsPedido.Post;
+  cdsPedido.ApplyUpdates(-1);
 end;
 
 procedure TfrmCadastroPedido.nmbIDITEMChange(Sender: TObject);
@@ -217,6 +321,12 @@ begin
     end;
   end;
   edtDESCITEM.Text := FPedidoItem.Item.Descricao;
+end;
+
+procedure TfrmCadastroPedido.nmbNUMEROChange(Sender: TObject);
+begin
+  inherited;
+  CarregarPedido;
 end;
 
 procedure TfrmCadastroPedido.CalcValorTotalOnChange(Sender: TObject);
